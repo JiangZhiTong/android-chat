@@ -130,6 +130,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     ProtoLogic.IFriendRequestListUpdateCallback,
     ProtoLogic.IFriendListUpdateCallback,
     ProtoLogic.IGroupInfoUpdateCallback,
+    ProtoLogic.IConferenceEventCallback,
     ProtoLogic.IChannelInfoUpdateCallback, ProtoLogic.IGroupMembersUpdateCallback {
     private Map<Integer, Class<? extends MessageContent>> contentMapper = new HashMap<>();
 
@@ -150,6 +151,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     private RemoteCallbackList<IOnSettingUpdateListener> onSettingUpdateListenerRemoteCallbackList = new WfcRemoteCallbackList<>();
     private RemoteCallbackList<IOnChannelInfoUpdateListener> onChannelInfoUpdateListenerRemoteCallbackList = new WfcRemoteCallbackList<>();
     private RemoteCallbackList<IOnGroupMembersUpdateListener> onGroupMembersUpdateListenerRemoteCallbackList = new WfcRemoteCallbackList<>();
+    private RemoteCallbackList<IOnConferenceEventListener> onConferenceEventListenerRemoteCallbackList = new WfcRemoteCallbackList<>();
 
     private AppLogic.AccountInfo accountInfo = new AppLogic.AccountInfo();
     //        public final String DEVICE_NAME = android.os.Build.MANUFACTURER + "-" + android.os.Build.MODEL;
@@ -162,6 +164,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     private BaseEvent.ConnectionReceiver mConnectionReceiver;
 
     private String mHost;
+
+
 
     private class ClientServiceStub extends IRemoteClient.Stub {
 
@@ -222,9 +226,15 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public void setOnConferenceEventListener(IOnConferenceEventListener listener) throws RemoteException {
+            onConferenceEventListenerRemoteCallbackList.register(listener);
+        }
+
+        @Override
         public void setOnGroupMembersUpdateListener(IOnGroupMembersUpdateListener listener) throws RemoteException {
             onGroupMembersUpdateListenerRemoteCallbackList.register(listener);
         }
+
 
         @Override
         public void disconnect(boolean disablePush, boolean clearSession) throws RemoteException {
@@ -1795,6 +1805,29 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         public boolean isReceiptEnabled() throws RemoteException {
             return ProtoLogic.isReceiptEnabled();
         }
+
+        @Override
+        public void sendConferenceRequest(long sessionId, long roomId, String request, String data, IGeneralCallback2 callback) throws RemoteException {
+            ProtoLogic.sendConferenceRequest(sessionId, roomId, request, data, new ProtoLogic.IGeneralCallback2() {
+                @Override
+                public void onSuccess(String s) {
+                    try {
+                        callback.onSuccess(s);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
     }
 
     private ChannelInfo converProtoChannelInfo(ProtoChannelInfo protoChannelInfo) {
@@ -2064,6 +2097,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         ProtoLogic.setConnectionStatusCallback(ClientService.this);
         ProtoLogic.setReceiveMessageCallback(ClientService.this);
+        ProtoLogic.setConferenceEventCallback(ClientService.this);
         ProtoLogic.setAuthInfo(userName, userPwd);
         return ProtoLogic.connect(mHost);
     }
@@ -2499,6 +2533,24 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 }
             }
             onUserInfoUpdateListenerRemoteCallbackList.finishBroadcast();
+        });
+    }
+
+    @Override
+    public void onConferenceEvent(String s) {
+        handler.post(() -> {
+            int i = onConferenceEventListenerRemoteCallbackList.beginBroadcast();
+            IOnConferenceEventListener listener;
+            while (i > 0) {
+                i--;
+                listener = onConferenceEventListenerRemoteCallbackList.getBroadcastItem(i);
+                try {
+                    listener.onConferenceEvent(s);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+            onConferenceEventListenerRemoteCallbackList.finishBroadcast();
         });
     }
 
