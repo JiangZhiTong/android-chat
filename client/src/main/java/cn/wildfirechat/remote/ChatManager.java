@@ -4812,7 +4812,7 @@ public class ChatManager {
     }
 
 
-    public void sendConferenceRequest(long sessionId, long roomId, String request, String data, final GeneralCallback2 callback) {
+    public void sendConferenceRequest(long sessionId, String roomId, String request, String data, final GeneralCallback2 callback) {
         if (!checkRemoteService()) {
             if (callback != null)
                 callback.onFail(ErrorCode.SERVICE_DIED);

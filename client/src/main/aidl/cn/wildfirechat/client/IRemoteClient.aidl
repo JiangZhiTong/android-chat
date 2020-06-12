@@ -198,5 +198,5 @@ interface IRemoteClient {
 
     boolean isCommercialServer();
     boolean isReceiptEnabled();
-    void sendConferenceRequest(in long sessionId, in long roomId, in String request, in String data, in IGeneralCallback2 callback);
+    void sendConferenceRequest(in long sessionId, in String roomId, in String request, in String data, in IGeneralCallback2 callback);
 }

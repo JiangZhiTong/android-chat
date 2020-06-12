@@ -1807,7 +1807,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public void sendConferenceRequest(long sessionId, long roomId, String request, String data, IGeneralCallback2 callback) throws RemoteException {
+        public void sendConferenceRequest(long sessionId, String roomId, String request, String data, IGeneralCallback2 callback) throws RemoteException {
             ProtoLogic.sendConferenceRequest(sessionId, roomId, request, data, new ProtoLogic.IGeneralCallback2() {
                 @Override
                 public void onSuccess(String s) {
