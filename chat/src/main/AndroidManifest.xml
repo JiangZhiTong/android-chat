@@ -276,6 +276,9 @@
             android:name="cn.wildfire.chat.kit.group.manage.GroupMuteActivity"
             android:label="群禁言" />
 
+        <activity android:name="cn.wildfire.chat.kit.voip.conference.CreateConferenceActivity" />
+        <activity android:name="cn.wildfire.chat.kit.voip.conference.ConferenceActivity" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
