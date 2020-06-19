@@ -21,6 +21,8 @@ import cn.wildfire.chat.kit.voip.conference.ConferenceVideoFragment;
 import cn.wildfire.chat.kit.voip.VoipBaseActivity;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.avenginekit.VideoProfile;
+import cn.wildfirechat.message.ConferenceInviteMessageContent;
+import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.remote.ChatManager;
 
@@ -217,6 +219,16 @@ public class ConferenceActivity extends VoipBaseActivity {
 //        intent.putStringArrayListExtra(PickGroupMemberActivity.UNCHECKABLE_MEMBER_IDS, (ArrayList<String>) participants);
 //        intent.putExtra(PickGroupMemberActivity.MAX_COUNT, maxNewInviteParticipantCount);
 //        startActivityForResult(intent, REQUEST_CODE_ADD_PARTICIPANT);
+        AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
+        if (session != null) {
+            ConferenceInviteMessageContent invite = new ConferenceInviteMessageContent();
+            invite.setCallId(session.getCallId());
+            invite.setTitle(session.getTitle());
+            invite.setPin(session.getPin());
+            invite.setHost(session.getHost());
+            String target = "7f7272XX";
+            ChatManager.Instance().sendMessage(new Conversation(Conversation.ConversationType.Group, "7f7272XX"), invite, null, 0, null);
+        }
     }
 
     @Override

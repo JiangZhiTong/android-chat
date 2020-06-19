@@ -41,6 +41,7 @@ import java.util.Map;
 
 import cn.wildfirechat.ErrorCode;
 import cn.wildfirechat.message.CallStartMessageContent;
+import cn.wildfirechat.message.ConferenceInviteMessageContent;
 import cn.wildfirechat.message.FileMessageContent;
 import cn.wildfirechat.message.ImageMessageContent;
 import cn.wildfirechat.message.ImageTextMessageContent;
@@ -2039,6 +2040,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         try {
             mBinder.registerMessageContent(AddGroupMemberNotificationContent.class.getName());
             mBinder.registerMessageContent(CallStartMessageContent.class.getName());
+            mBinder.registerMessageContent(ConferenceInviteMessageContent.class.getName());
             mBinder.registerMessageContent(ChangeGroupNameNotificationContent.class.getName());
             mBinder.registerMessageContent(ChangeGroupPortraitNotificationContent.class.getName());
             mBinder.registerMessageContent(CreateGroupNotificationContent.class.getName());
